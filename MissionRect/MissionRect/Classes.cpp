@@ -13,13 +13,14 @@ void Point::Show(const char* s)	//Point에 속해있는 멤버함수
 
 void Point::ShowEx(const char* s)	//Point에 속해있는 멤버함수
 {
+	std::cout << s << "(" << x << "," << y << ")"<<std::endl;
 	printf("%s(%d, %d)", s, x, y);
 }
 
 
 Point& Point::operator+(Point p)	//두 점 CurP와, p의 + 연산결과를 (새로운 Point로) 반환 
 {
-	Point* p1 = new Point(x + p.x, y + p.y);
+	p1 = new Point(x + p.x, y + p.y);	//*p1 임시객체 new에 대한 소멸자가 없다 
 	return *p1;
 }
 

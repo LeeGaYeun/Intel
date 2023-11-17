@@ -11,9 +11,17 @@ private:
 public:
 	int x;	
 	int y;
+	Point* p1 = NULL;
+	Point(int x1 = 0, int y1 = 0) : x(x1), y(y1) 
+	{
+		std::cout << "Point »ý¼º("<<x<<","<<y<<")\n";
+	}
+	~Point() 
+	{
+		std::cout << "Point ¼Ò¸ê("<<x<<","<<y<<")\n";
+		if (p1 != NULL) delete p1;
+	}
 
-	Point(int x1 = 0, int y1 = 0) : x(x1), y(y1) {}
-	
 	double Dist(Point p);	//Distance
 	void Show(const char* s = NULL);	//View Current Point, s : Point name
 	void ShowEx(const char* s = NULL);	//View Current Point, s : Point name, No Linefeed
