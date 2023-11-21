@@ -107,8 +107,7 @@ int main(void)
    HAL_UART_Receive_IT(&huart2, &rxData, sizeof(rxData)); 
   while (1)
   {
-      //TIM3->EGR = TIM3->EGR | 0x01;
-      TIM3->EGR = TIM_EGR_UG; // Update generation
+      TIM3->EGR = TIM3->EGR | 0x01;
 
       HAL_Delay(500);
       printf("%c\n\r", rxData);
@@ -118,7 +117,7 @@ int main(void)
         pwmF = 10000000 / scale[0];
         TIM3->ARR = pwmF - 1;
         TIM3->CCR2 = pwmF / 2;
-				HAL_Delay(300);
+				HAL_Delay(200);
 				rxData = 0;
 				TIM3->ARR = 0;
 				TIM3->CCR2 = 0;
@@ -129,7 +128,7 @@ int main(void)
          pwmF = 10000000 / scale[1];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);
+				 HAL_Delay(200);
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;
@@ -140,7 +139,7 @@ int main(void)
          pwmF = 10000000 / scale[2];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);
+				 HAL_Delay(200);
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;
@@ -151,7 +150,7 @@ int main(void)
          pwmF = 10000000 / scale[3];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);
+				 HAL_Delay(200);
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;
@@ -162,7 +161,7 @@ int main(void)
          pwmF = 10000000 / scale[4];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);	
+				 HAL_Delay(200);	
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;
@@ -174,7 +173,7 @@ int main(void)
          pwmF = 10000000 / scale[5];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);		
+				 HAL_Delay(200);		
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;				
@@ -185,7 +184,7 @@ int main(void)
          pwmF = 10000000 / scale[6];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);				
+				 HAL_Delay(200);				
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;				
@@ -196,7 +195,7 @@ int main(void)
          pwmF = 10000000 / scale[7];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
-				 HAL_Delay(300);				
+				 HAL_Delay(200);				
 				 rxData = 0;
 				 TIM3->ARR = 0;
 				 TIM3->CCR2 = 0;				
