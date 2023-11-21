@@ -119,7 +119,7 @@ int main(void)
         TIM3->CCR2 = pwmF / 2;
 				HAL_Delay(200);
 				rxData = 0;
-				TIM3->ARR = 0;
+				TIM3->ARR = 0; //찌꺼기 제거
 				TIM3->CCR2 = 0;
       }
       
