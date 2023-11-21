@@ -74,7 +74,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
    uint32_t pwmF;
    uint8_t piano = 0;
-   uint16_t scale[] = {523, 587, 659, 698, 783, 880, 987};
+   uint16_t scale[] = {523, 587, 659, 698, 783, 880, 987, 1046};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -183,6 +183,17 @@ int main(void)
 			if(rxData == '7')
       {
          pwmF = 10000000 / scale[6];
+         TIM3->ARR = pwmF - 1;
+         TIM3->CCR2 = pwmF / 2;  
+				 HAL_Delay(300);				
+				 rxData = 0;
+				 TIM3->ARR = 0;
+				 TIM3->CCR2 = 0;				
+      }
+			
+			if(rxData == '8')
+      {
+         pwmF = 10000000 / scale[7];
          TIM3->ARR = pwmF - 1;
          TIM3->CCR2 = pwmF / 2;  
 				 HAL_Delay(300);				
