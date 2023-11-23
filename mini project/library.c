@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAXBooks 100
+
 typedef struct bookinfo
 {
 	int num;
@@ -10,50 +12,71 @@ typedef struct bookinfo
 	char writer[100];
 	char publish[100];
 	int price;
-	
-} book;
+	int borrownum;
 
-int i, count;
+} book;
+char stitle[100];
+int i, count, found;
+book list[MAXBooks];
 void registerbooks(book list[]);
-void listofbook(book list[]);
+void deletebook();
+void listofbook();
 void searchbook(book list[], char stitle[]);
+void borrow();
+void return_();
+void BACKMENU();
+void print();
 
 int main()
 {
-	book list[100];
 	int menu;
-	count = 0;
-
+	
 	while (1) {
 
-		printf("µµ  ¼­  ÇÁ  ·Î  ±×  ·¥\n\n******MENU******\n\n");
-		printf("1. µî·Ï\n2. ¸ñ·Ï\n3. °Ë»ö\n0. Á¾·á\n\n\n");
-		printf("»ç¿ëÇÏ°íÀÚ ÇÏ´Â ±â´ÉÀÇ ¼ıÀÚ¸¦ ÀÔ·ÂÇÏ½Ã¿À :");
+		printf("ë„  ì„œ  í”„  ë¡œ  ê·¸  ë¨\n\n******MENU******\n\n");
+		printf("1. ë“±ë¡\n2. ëª©ë¡\n3. ê²€ìƒ‰\n4. ëŒ€ì¶œ\n5. ë°˜ë‚©\n0. ì¢…ë£Œ\n\n\n");
+		printf("ì‚¬ìš©í•˜ê³ ì í•˜ëŠ” ê¸°ëŠ¥ì˜ ìˆ«ìë¥¼ ì…ë ¥í•˜ì‹œì˜¤ :");
 		scanf("%d", &menu);
 
 		switch (menu)
 		{
 		case 1:
-			registerbooks(list, &count);
+			registerbooks(list);
+			BACKMENU();
 			break;
-		
-		
+
 		case 2:
-			listofbook(list);
+			listofbook();
+			BACKMENU();
 			break;
 
 		case 3:
-			char stitle[100];
 			searchbook(list, stitle);
+			BACKMENU();
 			break;
+		
+		case 4:
+			borrow();
+			BACKMENU();
+			break;
+
+		case 5:
+			return_();
+			BACKMENU();
+			break;
+
+		case 6:
+			deletebook();
+			BACKMENU();
+			break;
+
 		case 0:
-			printf("\n\nÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.\n\n");
+			printf("\n\ní”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.\n\n");
 			exit(0);
 			break;
-		
-		
+
 		default:
-			printf("\n\nÀ¯È¿ÇÑ ¸Ş´º¸¦ ¼±ÅÃÇÏ¼¼¿ä.\n\n");
+			printf("\n\nìœ íš¨í•œ ë©”ë‰´ë¥¼ ì„ íƒí•˜ì„¸ìš”.\n\n");
 			break;
 		}
 	}
@@ -62,80 +85,196 @@ int main()
 
 void registerbooks(book list[])
 {
-	printf("µî·ÏÇÒ Ã¥ÀÇ ±Ç ¼ö¸¦ ÀÔ·ÂÇÏ¼¼¿ä :");
-	scanf("%d", &count);
+	int numbook;
 
-	for (i = 0; i < count; i++)
+	printf("ë“±ë¡í•  ì±…ì˜ ê¶Œ ìˆ˜ë¥¼ ì…ë ¥í•˜ì„¸ìš”\n");
+	scanf("%d", &numbook);
+
+	if (numbook > MAXBooks)
 	{
-		printf("¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ");
-		scanf("%d", &list[i].num);
-		printf("Á¦¸ñÀ» ÀÔ·ÂÇÏ¼¼¿ä : ");
-		scanf("%s", &list[i].title);
-		printf("ÀÛ°¡¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ");
-		scanf("%s", &list[i].writer);
-		printf("ÃâÆÇ»ç¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ");
-		scanf("%s", &list[i].publish);
-		printf("°¡°İÀ» ÀÔ·ÂÇÏ¼¼¿ä : ");
-		scanf("%d", &list[i].price);
-		
+		printf("100ê°œ ì´ìƒ ì±… ë“±ë¡ ë¶ˆê°€í•©ë‹ˆë‹¤.\n");
+		return;
 	}
-	printf("\n\n    µî·ÏµÈ Ã¥ Á¤º¸\n\n\n");
-	for (i = 0; i < count; i++) 
+
+	for (i = 0; i < numbook; i++)
 	{
-		printf("%d  %s  %s  %s  %d\n\n\n\n", list[i].num, list[i].title, list[i].writer, list[i].publish, list[i].price);
+		printf("\n%dë²ˆì§¸ ì±… ì •ë³´ë¥¼ ì…ë ¥í•˜ì„¸ìš”:\n\n", count + i + 1);
+		list[count + i].num = count + i + 1;
+		printf("ì œëª©ì„ ì…ë ¥í•˜ì„¸ìš” : ");
+		scanf("%s", list[count + i].title);
+		printf("ì‘ê°€ë¥¼ ì…ë ¥í•˜ì„¸ìš” : ");
+		scanf("%s", list[count + i].writer);
+		printf("ì¶œíŒì‚¬ë¥¼ ì…ë ¥í•˜ì„¸ìš” : ");
+		scanf("%s", list[count + i].publish);
+		printf("ê°€ê²©ì„ ì…ë ¥í•˜ì„¸ìš” : ");
+		scanf("%d", &list[count + i].price);
 	}
-	printf("¸Ş´º·Î µ¹¾Æ°¡½Ã°Ú½À´Ï±î?\n\nYes  [1]	  No  [0]\n\n");
-	int back;
-	scanf("%d", &back);
-	if (back == 0)
+
+	count += numbook;
+	
+	for (i = count - numbook; i < count; i++)
 	{
-		printf("\nÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.\n\n");
-		exit(0);
+		list[i].borrownum = 0;
+	}
+
+	printf("ë“±ë¡í•œ ì±… ì •ë³´\n\n");
+	for (i = count - numbook; i < count; i++)
+	{
+		print();
 	}
 }
 
-void listofbook(book list[])
+void deletebook()
 {
-	printf("\n\n   Ã¥ ¸ñ·Ï\n\n");
+	int delete;
+	printf("ì‚­ì œí•  ì±… ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”\n");
+	scanf("%d", &delete);
 	for (i = 0; i < count; i++)
 	{
-		printf("%d  %s  %s  %s  %d\n\n", list[i].num, list[i].title, list[i].writer, list[i].publish, list[i].price);
+		if (delete == list[i].num)
+		{
+			//list[i].num, list[i].title, list[i].writer, list[i].publish, list[i].price
+			list[i - 1].num = list[i].num;
+			strcpy(list[i - 1].title, list[i].title);
+			strcpy(list[i - 1].writer, list[i].writer);
+			strcpy(list[i - 1].publish, list[i].publish);
+			list[i - 1].price = list[i].price;
+			
+			printf("\n\n%d  %s  %s  %s  %d\n\n",
+				list[0].num, list[0].title, list[0].writer, list[0].publish, list[0].price);
+
+		}
 	}
-	printf("¸Ş´º·Î µ¹¾Æ°¡½Ã°Ú½À´Ï±î?\n\nYes  [1]	  No  [0]\n\n");
-	int back;
-	scanf("%d", &back);
-	if (back == 0)
+	
+	
+}
+
+void listofbook()
+{
+	printf("\n\n   ì±… ëª©ë¡\n\n");
+	for (i = 0; i < count; i++)
 	{
-		printf("\nÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.\n\n");
-		exit(0);
+		print();
 	}
 }
 
 void searchbook(book list[], char stitle[])
 {
-	
-	printf("°Ë»öÇÒ Ã¥ Á¦¸ñÀ» ÀÔ·ÂÇÏ¼¼¿ä. : ");
+	printf("ê²€ìƒ‰í•  ì±… ì œëª©ì„ ì…ë ¥í•˜ì„¸ìš”. : ");
 	scanf("%s", stitle);
-
-	int found = 0;
+		
 	for (i = 0; i < count; i++)
 	{
 		if (strcmp(list[i].title, stitle) == 0)
 		{
-			printf("\n\n%d  %s  %s  %s  %d\n\n\n\n", list[i].num, list[i].title, list[i].writer, list[i].publish, list[i].price);
+			print();
 			found = 1;
 		}
 	}
+	
 	if (!found)
 	{
-		printf("\n\nÃ£À¸½Ã´Â Ã¥ÀÌ ¾ø½À´Ï´Ù.\n\n\n");
+		printf("\n\nì°¾ìœ¼ì‹œëŠ” ì±…ì´ ì—†ìŠµë‹ˆë‹¤.\n\n\n");
 	}
-	printf("¸Ş´º·Î µ¹¾Æ°¡½Ã°Ú½À´Ï±î?\n\nYes  [1]	  No  [0]\n\n");
+}
+
+void borrow()
+{
+	int cborrownum;
+	printf("ëŒ€ì¶œ ê°€ëŠ¥í•œ ì±…\n");
+	for (i = 0; i < count; i++)
+	{
+		if (list[i].borrownum == 0)
+		{
+			print();
+		}
+	}
+
+	printf("ëŒ€ì¶œí•  ì±… ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”.\n");
+	scanf("%d", &cborrownum);
+
+	for (i = 0; i < count; i++)
+	{
+		if (cborrownum == list[i].num)
+		{
+			found = 1;
+			if (list[i].borrownum == 0)
+			{
+				list[i].borrownum = 1;
+				printf("%dë²ˆ ì±… ëŒ€ì¶œ í–ˆìŠµë‹ˆë‹¤.\n\n", cborrownum);
+			}
+			else
+			{
+				printf("ëŒ€ì¶œ ë¶ˆê°€ëŠ¥í•©ë‹ˆë‹¤.\n\n");
+			}
+		}
+	}
+
+	if (!found)
+	{
+		printf("ì±… ë²ˆí˜¸ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.\n\n");
+	}
+	
+}
+
+void return_()
+{
+	int cborrownum;
+	printf("ë°˜ë‚© ê°€ëŠ¥í•œ ì±…\n");
+	for (i = 0; i < count; i++)
+	{
+		if (list[i].borrownum == 1)
+		{
+			print();
+		}
+	}
+
+	printf("ë°˜ë‚©í•  ì±… ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”.\n");
+	scanf("%d", &cborrownum);
+
+	for (i = 0; i < count; i++)
+	{
+		if (cborrownum == list[i].num)
+		{
+			found = 1;
+			if (list[i].borrownum == 1)
+			{
+				list[i].borrownum = 0;
+				printf("%dë²ˆ ì±… ë°˜ë‚© í–ˆìŠµë‹ˆë‹¤.\n\n", cborrownum);
+			}
+			else
+			{
+				printf("ë°˜ë‚© ë¶ˆê°€ëŠ¥í•©ë‹ˆë‹¤.\n\n");
+			}
+		}
+	}
+
+	if (!found)
+	{
+		printf("ì±… ë²ˆí˜¸ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.\n\n");
+	}
+
+}
+
+void BACKMENU()
+{
+	printf("ë©”ë‰´ë¡œ ëŒì•„ê°€ì‹œê² ìŠµë‹ˆê¹Œ?\n\nYes  [1]	  No  [0]\n\n");
 	int back;
 	scanf("%d", &back);
+
 	if (back == 0)
 	{
-		printf("\nÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.\n\n");
+		printf("\ní”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.\n\n");
 		exit(0);
 	}
+}
+
+void print()
+{
+	printf("\n\n%d  %s  %s  %s  %d", 
+		list[i].num, list[i].title, list[i].writer, list[i].publish, list[i].price);
+	if (list[i].borrownum == 1) {
+		printf("\tëŒ€ì¶œì¤‘...\n");
+	}
+	else printf("\n\n");
 }
