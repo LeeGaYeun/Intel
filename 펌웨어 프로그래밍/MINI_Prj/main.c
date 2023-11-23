@@ -96,11 +96,12 @@ int main()
 	MX_I2C1_Init();
 	MX_USART2_UART_Init();
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) LAMPData, 1);
-	
 	HAL_UART_Receive_IT(&huart2, &rxData, sizeof(rxData));
 	
 	MX_TIM1_Init();
 	MX_TIM3_Init();
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	
 	void MENU();
 	void LEDSHIFT();
@@ -109,22 +110,22 @@ int main()
 	void STREETLIGHT();
 	void num5play();
 	
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	sht20_INIT();
-//	float temperature, humidity;
 	uint16_t scale[] = {523, 587, 659, 698, 783, 880, 987, 1046};
 	uint32_t pwmF;
 	
 	MENU();
+	
 	while(1)
 	{
 		HAL_Delay(500);
-
+		
+		//LED 옮기기
 		if(rxData == '1')
 		{
 			LEDSHIFT();
 		}
+		
 		//무드등
 		if(rxData == '2')
 		{
@@ -137,27 +138,22 @@ int main()
 			PIANO();
 		}
 		
-		
 		//가로등
 		if(rxData == '4')
 		{
 			STREETLIGHT();
-		}
-		
+		}		
 		
 		//온도 습도
 		if(rxData == '5')
 		{
 			num5play();
-			/*temperature	=	sht20(TEMP);
-			humidity = sht20(HUMI);
-			printf("TEMP = %.2lf  HUMI = %.2lf\n\r", temperature, humidity);
-			HAL_Delay(500);*/
 		}
 		
+		//프로그램 종료
 		if(rxData == '0')
 		{
-			printf("Shut down the program\r\n");
+			printf("********************Shut down the program********************\r\n");
 			break;
 		}
 	}
