@@ -26,18 +26,15 @@ void borrow();
 void return_();
 void BACKMENU();
 void print();
-int typo();
+int typo(const char* type);
 
 int main()
 {
-	int menu;
-
 	while (1) {
 
 		printf("도  서  프  로  그  램\n\n******MENU******\n\n");
 		printf("1. 등록\n2. 목록\n3. 검색\n4. 대출\n5. 반납\n6. 도서 삭제\n0. 종료\n\n\n");
-		printf("사용하고자 하는 기능의 숫자를 입력하시오 :");
-		scanf("%d", &menu);
+		int menu = typo("사용하고자 하는 기능의 숫자를 입력하시오 :");
 
 		switch (menu)
 		{
@@ -166,8 +163,6 @@ void borrow()
 	}
 
 	int cborrownum = typo("대출할 책 번호를 입력하세요.\n");
-	//printf("대출할 책 번호를 입력하세요.\n");
-	//scanf("%d", &cborrownum);
 
 	for (i = 0; i < count; i++)
 	{
@@ -205,8 +200,6 @@ void return_()
 	}
 
 	int cborrownum = typo("반납할 책 번호를 입력하세요.\n");
-	//printf("반납할 책 번호를 입력하세요.\n");
-	//scanf("%d", &cborrownum);
 
 	for (i = 0; i < count; i++)
 	{
@@ -235,8 +228,6 @@ void return_()
 void BACKMENU()
 {	
 	int back = typo("메뉴로 돌아가시겠습니까 ? \n\nYes[1]	  No[0]\n\n");
-	//printf("메뉴로 돌아가시겠습니까?\n\nYes  [1]	  No  [0]\n\n");
-	//scanf("%d", &back);
 
 	if (back == 0)
 	{
@@ -258,9 +249,6 @@ void deletebook()
 	}
 
 	int delete = typo("삭제할 책 번호를 입력하세요.\n");
-	//printf("삭제할 책 번호를 입력하세요.\n");
-	//scanf("%d", &delete);
-
 	int deletenum = -1;
 
 	for (i = 0; i < count; i++)
@@ -319,7 +307,7 @@ int typo(const char* type)
 
 	while (1) {
 		printf("%s", type);
-		if (scanf("%d", &num) == 1 && num > 0) {
+		if (scanf("%d", &num) == 1 && num >= 0) {
 			break;
 		}
 		else {
