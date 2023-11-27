@@ -7,17 +7,17 @@
 
 typedef struct bookinfo
 {
-	int num;
-	char title[100];
-	char writer[100];
-	char publish[100];
-	int price;
-	int borrownum;
-
+	int num;				//책 번호
+	char title[100];		//책 이름
+	char writer[100];		//작가
+	char publish[100];		//출판사
+	int price;				//가격
+	int borrownum;			//대출 여부 (0: 대출 가능, 1: 대출 중)
 } book;
-char stitle[100];
+char stitle[100];			//검색할 책 제목을 저장하는 배열
 int i, count, found;
-book list[MAXBooks];
+book list[MAXBooks];		//구조체 book 정보를 저장하는 배열
+
 void registerbooks(book list[]);
 void deletebook();
 void listofbook();
@@ -81,11 +81,9 @@ int main()
 	return 0;
 }
 
-void registerbooks(book list[])
+void registerbooks(book list[])		//책 등록 함수
 {
 	int numbook = typo("등록할 책의 권 수를 입력하세요\n");
-	//printf("등록할 책의 권 수를 입력하세요\n");
-	//scanf("%d", &numbook);
 
 	if (numbook > MAXBooks)
 	{
@@ -104,13 +102,11 @@ void registerbooks(book list[])
 		printf("출판사를 입력하세요 : ");
 		scanf("%s", list[count + i].publish);
 		list[count + i].price = typo("가격을 입력하세요 : ");
-		//printf("가격을 입력하세요 : ");
-		//scanf("%d", &list[count + i].price);
 	}
 
-	count += numbook;
+	count += numbook;	//전체 도서의 개수 + 새로 등록한 책
 
-	for (i = count - numbook; i < count; i++)
+	for (i = count - numbook; i < count; i++)	//등록한 책 대출여부 0으로 초기화
 	{
 		list[i].borrownum = 0;
 	}
@@ -122,7 +118,7 @@ void registerbooks(book list[])
 	}
 }
 
-void listofbook()
+void listofbook()	//등록한 책 정보 리스트
 {
 	printf("\n\n   책 목록\n\n");
 	for (i = 0; i < count; i++)
@@ -131,7 +127,7 @@ void listofbook()
 	}
 }
 
-void searchbook(book list[], char stitle[])
+void searchbook(book list[], char stitle[])		//도서 검색 함수
 {
 	printf("검색할 책 제목을 입력하세요. : ");
 	scanf("%s", stitle);
@@ -151,7 +147,7 @@ void searchbook(book list[], char stitle[])
 	}
 }
 
-void borrow()
+void borrow()	//도서 대출 함수
 {
 	printf("대출 가능한 책\n");
 	for (i = 0; i < count; i++)
@@ -166,10 +162,10 @@ void borrow()
 
 	for (i = 0; i < count; i++)
 	{
-		if (cborrownum == list[i].num)
+		if (cborrownum == list[i].num)	//대출할 책 번호와 일치하는지 확인
 		{
-			found = 1;
-			if (list[i].borrownum == 0)
+			found = 1;		//일치하면 1
+			if (list[i].borrownum == 0)		//대출 가능하면 1로 처리
 			{
 				list[i].borrownum = 1;
 				printf("%d번 책 대출 했습니다.\n\n", cborrownum);
@@ -181,16 +177,16 @@ void borrow()
 		}
 	}
 
-	if (!found)
+	if (!found)		//일치하는게 없을 경우
 	{
 		printf("책 번호가 존재하지 않습니다.\n\n");
 	}
 
 }
 
-void return_()
+void return_()	//도서 반납 함수
 {
-	printf("반납 가능한 책\n");
+	printf("반납 가능한 책\n");		//반납 가능한 책 리스트
 	for (i = 0; i < count; i++)
 	{
 		if (list[i].borrownum == 1)
@@ -203,9 +199,9 @@ void return_()
 
 	for (i = 0; i < count; i++)
 	{
-		if (cborrownum == list[i].num)
+		if (cborrownum == list[i].num)	//반납할 책 번호와 일치하는지 확인
 		{
-			found = 1;
+			found = 1;		//일치하면 1
 			if (list[i].borrownum == 1)
 			{
 				list[i].borrownum = 0;
@@ -218,15 +214,15 @@ void return_()
 		}
 	}
 
-	if (!found)
+	if (!found)	//일치하는게 없을 경우
 	{
 		printf("책 번호가 존재하지 않습니다.\n\n");
 	}
 
 }
 
-void BACKMENU()
-{	
+void BACKMENU()		//메뉴로 돌아가는 함수
+{
 	int back = typo("메뉴로 돌아가시겠습니까 ? \n\nYes[1]	  No[0]\n\n");
 
 	if (back == 0)
@@ -236,11 +232,11 @@ void BACKMENU()
 	}
 }
 
-void deletebook()
+void deletebook()	//도서 삭제 함수
 {
 	printf("삭제 가능한 책 목록\n");
 
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count; i++)		//대출중인 책 뺀 책 리스트
 	{
 		if (list[i].borrownum == 0)
 		{
@@ -253,35 +249,35 @@ void deletebook()
 
 	for (i = 0; i < count; i++)
 	{
-		if (delete == list[i].num)
+		if (delete == list[i].num)	//삭제할 책 번호와 일치하는 번호 찾기
 		{
 			deletenum = i;
 			break;
 		}
 	}
 
-	if (deletenum != -1)
+	if (deletenum != -1)	//삭제할 책 확인
 	{
-		if (list[deletenum].borrownum == 1)
+		if (list[deletenum].borrownum == 1)	//대출중인건 불가
 		{
 			printf("대출 중인 책은 삭제할 수 없습니다.\n");
 		}
 		else
 		{
-			for (int j = deletenum; j < count - 1; j++)
+			for (int j = deletenum; j < count - 1; j++)	//선택한 책 삭제
 			{
 				list[j] = list[j + 1];
 			}
-			list[count - 1].num = 0;
+			list[count - 1].num = 0;	//삭제한 배열 초기화
 			strcpy(list[count - 1].title, "");
 			strcpy(list[count - 1].writer, "");
 			strcpy(list[count - 1].publish, "");
 			list[count - 1].price = 0;
 			list[count - 1].borrownum = 0;
-			count--;
-			for (int j = 0; j < count; j++)
+			count--;	//전체 책 수량 줄이기
+			for (int j = 0; j < count; j++)		//배열 책 번호 재조정
 			{
-				list[j].num = j + 1;
+				list[j].num = j + 1;	//도서의 번호가 1부터 시작하도록 조정
 			}
 		}
 	}
@@ -291,23 +287,25 @@ void deletebook()
 	}
 }
 
-void print()
+void print()	//출력 함수
 {
 	printf("\n\n%d  %s  %s  %s  %d",
 		list[i].num, list[i].title, list[i].writer, list[i].publish, list[i].price);
-	if (list[i].borrownum == 1) {
+	if (list[i].borrownum == 1) //대출중 표시
+	{
 		printf("\t대출중...\n");
 	}
 	else printf("\n\n");
 }
 
-int typo(const char* type)
+int typo(const char* type)	//정수 입력 받는 함수
 {
 	int num;
 
 	while (1) {
 		printf("%s", type);
-		if (scanf("%d", &num) == 1 && num >= 0) {
+		if (scanf("%d", &num) == 1 && num >= 0)	//정수가 성공적으로 받으면 1 and 0보다 크거나 같다. 
+		{
 			break;
 		}
 		else {
