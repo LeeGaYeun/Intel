@@ -48,6 +48,13 @@
 #define WRITE_USER_RE			0xE6
 #define READ_USER_RE			0xE7
 #define SOFT_RESET				0xFE
+
+#define STK_CTRL  *(volatile unsigned int*)0xE000E010
+#define STK_LOAD  *(volatile unsigned int*)0xE000E014
+#define STK_VAL   *(volatile unsigned int*)0xE000E018
+#define STK_CALIB *(volatile unsigned int*)0xE000E01c
+	
+#define ENABLE 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -75,6 +82,11 @@ int fputc(int ch, FILE* stream)
 
 float sht20(int);
 void sht20_INIT();
+
+void usDelay(uint16_t us);
+void SysTic_Init();
+void HAL_Delay_Porting();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -100,8 +112,14 @@ int main()
 	
 	MX_TIM1_Init();
 	MX_TIM3_Init();
+	MX_TIM10_Init();
+	
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+	
+	HAL_TIM_Base_Start(&htim1);
+	HAL_TIM_Base_Start(&htim10);
+	TIM1->EGR = TIM1->EGR | 0x01;
 	
 	void MENU();
 	void LEDSHIFT();
@@ -109,10 +127,10 @@ int main()
 	void PIANO();
 	void STREETLIGHT();
 	void num5play();
+	void Ultrasonic();
 	
 	sht20_INIT();
 	uint16_t scale[] = {523, 587, 659, 698, 783, 880, 987, 1046};
-	uint32_t pwmF;
 	
 	MENU();
 	
@@ -148,6 +166,12 @@ int main()
 		if(rxData == '5')
 		{
 			num5play();
+		}
+		
+		//초음파 센서
+		if(rxData == '6')
+		{
+			Ultrasonic();
 		}
 		
 		//프로그램 종료
@@ -213,7 +237,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 void MENU(void)
 {
 	printf("********************EMBEDDED SYSTEM********************\r\n");
-	printf("1. LED_SHIFT\r\n2. MOOD_LIGHT\r\n3. PIANO\r\n4. STREETLIGHT\r\n5. TEMP/HUMI\r\n0. EXIT\r\n");
+	printf("1. LED_SHIFT\r\n2. MOOD_LIGHT\r\n3. PIANO\r\n4. STREETLIGHT\r\n5. TEMP/HUMI\r\n6. Ultrasonic Waves\r\n0. EXIT\r\n");
 }
 void LEDSHIFT()
 {
@@ -250,6 +274,7 @@ void LEDSHIFT()
 				HAL_Delay(500);
 				HAL_GPIO_WritePin(GPIOC, LED << i, 0);
 			}
+			
 			if(rxData == 'z')
 			{
 				MENU();
@@ -478,6 +503,71 @@ void num5play()
 			break;
 		}
 	}
+}
+
+void usDelay(uint16_t us){
+      __HAL_TIM_SET_COUNTER(&htim10, 0);   
+      while(__HAL_TIM_GET_COUNTER(&htim10) < us){
+      
+      }
+}
+
+void SysTic_Init()
+{
+   STK_LOAD = 100 - 1;
+   STK_VAL = 0;
+   STK_CTRL = 6; 
+   uwTick = 0;
+}
+
+void HAL_Delay_Porting()
+{
+   STK_LOAD = 100000 - 1;
+   STK_CTRL |= 7;
+}
+
+void Ultrasonic()
+{
+	uint16_t cnt = 0;
+  uint32_t echoTime = 0;
+	uint32_t pwmF;
+	 while(1){
+   
+     SysTic_Init();
+     HAL_GPIO_WritePin(Trig_GPIO_Port, Trig_Pin, 1);
+     usDelay(15);
+     HAL_GPIO_WritePin(Trig_GPIO_Port, Trig_Pin, 0);
+      
+     while(HAL_GPIO_ReadPin(Echo_GPIO_Port, Echo_Pin) == 0);         
+     STK_CTRL |= (1 << ENABLE);               //SysTick timer start
+     while(HAL_GPIO_ReadPin(Echo_GPIO_Port, Echo_Pin) == 1);
+     echoTime = HAL_GetTick();
+     STK_CTRL &= ~(1 << ENABLE);
+     //340m/s -> 340 * 100cm/1000000us -> 0.034cm/u s
+      
+		 printf("Distance = %.1lf cm\n\r", echoTime / 2 * 0.034);
+  
+		 
+     HAL_Delay_Porting();
+     HAL_Delay(200);
+		
+		 if ( 0.0 < (echoTime / 2 * 0.034) && (echoTime / 2 * 0.034) < 10.0) {
+			 pwmF = 10000000 / 523;
+			 TIM3 -> ARR = pwmF -1;
+			 TIM3 -> CCR1 = pwmF / 2;
+			 HAL_Delay(100);
+			 TIM3->ARR = 0; 
+			 TIM3->CCR1 = 0;
+		 }
+		 else if ( 10.0 < (echoTime / 2 * 0.034) && (echoTime / 2 * 0.034) < 20.0) {
+			 pwmF = 10000000 / 523;
+			 TIM3 -> ARR = pwmF -1;
+			 TIM3 -> CCR1 = pwmF / 2;
+			 HAL_Delay(300);
+			 TIM3->ARR = 0; 
+			 TIM3->CCR1 = 0;
+		 }
+   }
 }
 /* USER CODE END 4 */
 
