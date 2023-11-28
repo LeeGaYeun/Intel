@@ -1,13 +1,15 @@
 ﻿#include <iostream>
+#include <string>
+using namespace std;
 
 template <typename T>
 class ArrTest
 {
 private:
     T* arr;
-    int Len;  // 배열 요소의 수
+    int Len;  // 배열 요소의 수   바뀔리가 없는건 자료형 지정
 public:
-    ArrTest(int size) : Len(size)
+    ArrTest(int size) : Len(size)   //배열 크기에 따라 동적 할당
     {
         arr = new T[size];
     }
@@ -15,7 +17,7 @@ public:
     {
         delete arr;
     }
-    int length()
+    int length()    //배열의 길이 반환
     {
         return Len;
     }
@@ -27,6 +29,33 @@ public:
         }
         return arr[idx];
     }
+     
+    ArrTest<T>& operator+(ArrTest<T>& br)
+    {
+        int l = Len + br.length();                    //총 길이
+        ArrTest<T>* cr = new ArrTest<T>(l);           //새로운 객체 생성
+        //T* arr1 = new T[Len + brr.length()];        // 새로운 배열 할당
+        memcpy(cr->arr, arr, Len * sizeof(T));
+        memcpy(cr->arr + Len, br.arr, br.length() * sizeof(T));
+
+        return *cr;
+    }
+
+    ArrTest<T>& operator+=(ArrTest<T>& br)  //calling sequence : arr += brr
+    {
+        return this->append(br);
+    }
+
+    bool operator==(ArrTest<T>& br)         //calling sequence : if(arr == brr)
+    {
+        if (Len != br.length())  return false;
+        for (int i = 0; i < Len; i++)
+        {
+            if (arr[i] != br[i]) return false;
+        }
+        return true;
+    }
+
     void show()
     {
         int i;
@@ -35,7 +64,7 @@ public:
             std::cout << arr[i] << ",";    std::cout << arr[i];
         printf(" }\n");
     }
-    ArrTest& append(int size)
+    ArrTest& append(int size)         //배열 길이 확장
     {
         T* arr1 = new T[Len + size];  // 확장된 메모리
         memcpy(arr1, arr, Len * sizeof(T));
@@ -44,7 +73,7 @@ public:
         Len += size;
         return *this;
     }
-    ArrTest& append(ArrTest& brr)
+    ArrTest& append(ArrTest& brr)             //다른 배열을 현재 배열에 추가
     {
         T* arr1 = new T[Len + brr.length()];  // 확장된 메모리
         memcpy(arr1, arr, Len * sizeof(T));
@@ -54,6 +83,23 @@ public:
         Len += brr.length();
         return *this;
     }
+    friend ostream& operator<<(ostream& os, ArrTest& ar)    //배열 출력을 위한 연산자 오버로딩
+    {
+        int i;
+        printf("{");
+        for (i = 0; i < ar.Len - 1; i++)
+            std::cout << ar.arr[i] << ",";    std::cout << ar.arr[i];
+        printf(" }");
+        return os;
+    }
+  
+    //ArrTest& operator+=(ArrTest& other)   // calling sequence : arr[n]
+    //{
+    //    return this->append(other);
+    //    //arr의 append 함수를 사용하여 입력을 brr을 넣는다.
+    //    //arr.apeend(brr);
+    //}
+
 };
 //void ArrTest<T>::show()   // { 1 2 3 4 5} ==> { 1,2,3,4,5 }
 //ArrTest& ArrTest::append(int size)  // size :  total ?  
@@ -83,7 +129,7 @@ public:
 int main()
 {
     double a1[] = { 15.1,12.1,13.1,11.1,14.1 };
-    ArrTest<double> arr(5);
+    ArrTest<double> arr(5); //class에서 템플릿은 자료형을 나타내줘야 한다.(함수는 x)
     for (int i = 0; i < 5; i++)             arr[i] = a1[i];
     //for (int i = 0; i < arr.length() ; i++) printf("ArrTest[%d] = %d\n", i, arr[i]);
     //
@@ -94,10 +140,21 @@ int main()
     //
     //int n = arr.length();
     //printf("배열 확장 %d --> %d\n\n", n, arr.append(brr).length());
-    //
+    // 
     //for (int i = 0; i < arr.length() ; i++) printf("ArrTest[%d] = %d\n", i, arr[i]);
+    
+    if (arr == brr)  printf("Same sequence...\n");
+
+    ArrTest<double> crr = arr + brr;
+
     Func mul;
     std::cout << mul(2, 3) << "\n";
     std::cout << mul(2.5, 3.7) << "\n";
-    mul(arr, brr).show();
+    std::cout << mul(arr, brr) << "\n"; //mul(arr, brr).show
+    std::cout << (arr += brr) << "\n";
+    std::cout << crr << "\n";
+
+    string s = "안녕하세요";
+    cout << s << endl;
+    cout << s.substr(2, 2) << endl; 
 }
