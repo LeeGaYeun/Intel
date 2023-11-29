@@ -1,0 +1,95 @@
+﻿/*
+도형 계층
+구조:목표: 기본 클래스와 파생 클래스를 사용하여 도형의 계층 구조 만들기
+
+구현: Shape이라는 기본 클래스를 만들고, Circle, Rectangle, Triangle 등의 도형 클래스를 파생시킵니다. 각 도형 클래스는 넓이를 계산하는 함수를 포함해야 합니다.
+
+설명: Shape 클래스를 만들어 기본 도형의 속성과 면적을 계산하는 가상 함수를 구현합니다. 그리고 Circle, Rectangle, Triangle 등의 클래스를 만들어 기본 클래스를 상속받아 특정 도형들의 면적을 구합니다.
+*/
+
+#include <iostream>
+#define SQUARE(x) (x * x) 
+#define ABS(x) (((x)<0)?(-(x)):(x))
+#define MIN(x, y)   (((x)>(y))? (y) : (x))
+#define MAX(x, y)   (((x)<(y))? (y) : (x))  
+
+class Point
+{
+public:
+	int x, y;
+	Point() : x(0), y(0) {}
+	Point(int x, int y) : x(x), y(y) {}
+};
+
+class Shape
+{
+public:
+	virtual double Area() = 0;
+	virtual ~Shape() {}
+};
+
+class Circle : public Shape
+{
+	Point x1, y1;
+public:
+	Circle(Point& x, Point& y) : x1(x), y1(y) {}
+	double Area() override
+	{
+		double r = sqrt((double)(SQUARE(ABS(x1.x - y1.x))) + (double)(SQUARE(ABS(x1.y - y1.y))));
+		return 3.14 * r * r;
+	}
+};
+
+class Rectangle : public Shape
+{
+	Point x1, y1;
+	Point LL, LR, UL, UR;
+public:
+	Rectangle(Point& x, Point& y) : x1(x), y1(y) {}
+	double Area() override
+	{
+		LL = Point(MIN(x1.x, y1.x), MIN(x1.y, y1.y));
+		LR = Point(MAX(x1.x, y1.x), MIN(x1.y, y1.y));
+		UL = Point(MIN(x1.x, y1.x), MAX(x1.y, y1.y));
+
+		double width = (double)(ABS(LL.x - LR.x));
+		double height = (double)(ABS(UL.y - LL.y));
+
+		return width * height;
+	}
+};
+
+class Triangle : public Shape
+{
+	Point x1, y1, z1;
+public:
+	Triangle(Point& x, Point& y, Point& z) : x1(x), y1(y), z1(z) {}
+	double Area() override
+	{
+		double xy = sqrt((double)(SQUARE(ABS(x1.x - y1.x))) + (double)(SQUARE(ABS(x1.y - y1.y))));
+		double xz = sqrt((double)(SQUARE(ABS(x1.x - z1.x))) + (double)(SQUARE(ABS(x1.y - z1.y))));
+		double yz = sqrt((double)(SQUARE(ABS(y1.x - z1.x))) + (double)(SQUARE(ABS(y1.y - z1.y))));
+		double t = (xy + xz + yz) / 2.0;
+
+		return sqrt(t * (t - xy) * (t - xz) * (t - yz));
+	}
+};
+
+void print(Shape& figure)
+{
+	printf("면적 : %.2f\n", figure.Area());
+}
+
+int main()
+{
+	Point p1(10, 10);
+	Point p2(20, 20);
+	Point p3(30, 40);
+	Circle circle(p1, p2);
+	Rectangle rectangle(p1, p2);
+	Triangle triangle(p1, p2, p3);
+
+	print(circle);
+	print(rectangle);
+	print(triangle);
+}
