@@ -1,0 +1,200 @@
+/*
+String  class:
+목표:  배열클래스를 이용한 문자열 처리 클래스 작성
+
+구현:  문자열을 다루른 데 적합한 String 클래스를 만들고,  연산자를 오버로딩하여 문자열에 대한 연산을 수행하세요.
+
+설명:   +,<<,!=  , ==, += 연산자 오버로딩. 찾기, 자르기, 바꾸기 연산 수행
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <string>
+using namespace std;
+
+class String
+{
+private:
+    char* array;
+    int Len;
+
+public:
+    String(const char* arr) 
+    {
+        Len = strlen(arr);
+        array = new char[Len + 1];
+        strcpy_s(array, Len + 1, arr);
+    }
+
+    ~String() 
+    {
+        delete[] array;
+    }
+
+    int length() const 
+    {
+        return Len;
+    }
+
+    char operator[](int idx) const 
+    {
+        if (idx < 0 || idx >= Len) 
+        {
+            std::cout << "범위를 벗어났습니다.\n";
+            exit(1);
+        }
+        return array[idx];
+    }
+
+    String operator+(const String& br) const 
+    {
+        int l = Len + br.length();
+        String cr("");
+        cr.append(*this);
+        cr.append(br);
+        return cr;
+    }
+
+    String& operator+=(const String& br) 
+    {
+        append(br);
+        return *this;
+    }
+
+    bool operator!=(const String& br) const 
+    {
+        return !(*this == br);
+    }
+
+    bool operator==(const String& br) const 
+    {
+        if (Len != br.length()) return false;
+        for (int i = 0; i < Len; i++) {
+            if (array[i] != br[i]) return false;
+        }
+        return true;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const String& ar) 
+    {
+        std::cout << ar.array;
+        return os;
+    }
+
+    void append(const String& brr) 
+    {
+        char* arr1 = new char[Len + brr.length() + 1];
+        strcpy_s(arr1, Len + brr.length() + 1, array);
+        strcat_s(arr1, Len + brr.length() + 1, brr.array);
+        delete[] array;
+        array = arr1;
+        Len += brr.length();
+    }
+
+    int find(const char* find1) const
+    {
+        char* result = strstr(array, find1);
+        if (result != nullptr)
+        {
+            return result - array + 1;
+        }
+        return -1; 
+    }
+
+    String cut(int start, int end) const
+    {
+        if (start < 0 || start >= Len || end < 0 || end > Len || start > end)
+        {
+            std::cout << "잘릴 수 없는 위치입니다.\n";
+            exit(1);
+        }
+
+        char* cut1 = new char[end - start + 1];
+        strncpy_s(cut1, end - start + 1, array + start, end - start);
+        cut1[end - start] = '\0';
+        String result(cut1);
+        delete[] cut1;
+        return result;
+    }
+
+    void replace(const char* x, const char* y)
+    {
+        int replace1 = find(x);
+        if (replace1 != -1)
+        {
+            String start = cut(0, replace1);
+            
+            String end = cut(replace1 + strlen(x), Len - replace1);
+
+            delete[] array;
+
+            String change(y);
+
+            *this = start + change + end;
+
+            Len = start.length() + change.length() + end.length();
+        }
+    }
+};
+
+class Func 
+{
+public:
+    String operator()(const String& a, const String& b) const {
+        return a + b;
+    }
+};
+
+int main() 
+{
+    const char* a = "HELLO";
+    String a1(a);
+
+    const char* b = "WORLD";
+    String b1(b);
+
+    String plus = a1 + b1;
+    cout << "+ Operator : " << plus << endl;
+
+    a1 += b1;
+    cout << "+= Operator : " << a1 << endl;
+
+    if (a1 != b1) 
+    {
+        std::cout << "!= Operator 두 문자열은 같지 않습니다.\n";
+    }
+    else 
+    {
+        std::cout << "!= Operator 두 문자열은 같습니다.\n";
+    }
+
+    if (a1 == b1) 
+    {
+        cout << "== Operator 두 문자열은 같습니다.\n";
+    }
+    else 
+    {
+        cout << "== Operator 두 문자열은 같지 않습니다.\n";
+    }
+
+    std::cout << "<< Operator a1 : " << a1 << "\n";
+    std::cout << "<< Operator b1 : " << b1 << "\n";
+    
+    //찾기
+    const char* find1 = "EL";
+    int find2 = a1.find(find1);
+    cout << "a1에서 \"" << find1 << "\"을 찾은 인덱스 : " << find2 << "\n";
+
+    // 자르기
+    int start = 1;
+    int length = 3;
+    String substr = a1.cut(start, length);
+    cout << "a1의 위치 " << start + 1 << " 에서 시작해서 길이 " << length << "인 문자열 " << substr << "\n";
+
+    // 바꾸기
+    const char* old = "Hello";
+    const char* change = "Hi";
+    a1.replace(old, change);
+    cout << "바꾸기 연산 후 문자열 a1 " << a1 << "\n";
+
+    return 0;
+}
