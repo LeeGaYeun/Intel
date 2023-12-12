@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <wiringPi.h>
+
+#define KEY 5
+#define LED 16
+
+int main() {
+    printf("Raspberry Pi - Key Input Test\n");
+
+    int num = 0; // 키 입력 상태를 감지하기 위한 변수
+    int s = 0;   // LED의 상태를 토글하기 위한 변수
+
+    wiringPiSetupGpio();
+    pinMode(KEY, INPUT);
+    pinMode(LED, OUTPUT);
+
+    while (1) {
+        int value = digitalRead(KEY); // KEY 핀의 상태를 읽는다
+        delay(300);
+
+        if (value == LOW) { // 키가 눌렸을 때
+            if (num == 0) { // num이 0일 때만 실행 (키가 처음 눌린 경우)
+                num = 1;     // num을 1로 설정하여 중복 실행 방지
+                s = !s;      // s를 토글하여 LED 상태 변경
+            }
+        } else {            // 키가 눌리지 않았을 때
+            if (num == 1) { // num이 1일 때만 실행 (키가 떼진 경우)
+                num = 0;    // num을 0으로 설정하여 중복 실행 방지
+            }
+        }
+        if (s == 0) { // LED를 켜는 경우
+            printf("switch : ON\n");
+            digitalWrite(LED, 1); // LED를 켬
+            delay(100);
+        } else if (s == 1) {
+            printf("switch : OFF\n"); // LED를 끔
+            digitalWrite(LED, 0);
+            delay(100);
+        }
+    }
+    return 0;
+}
