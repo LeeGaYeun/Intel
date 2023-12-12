@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <wiringPi.h>
+#include <stdbool.h>
+
+#define LED 16
+#define LED1 20
+
+const int pinSw = 5;
+const int pinSw1 = 6;
+bool flag = false;   // 첫 번째 스위치 상태를 저장하는 플래그 변수
+bool flag1 = false;  // 두 번째 스위치 상태를 저장하는 플래그 변수
+
+void rising();       // Rising Edge에 대한 인터럽트 처리 함수 선언
+void falling();      // Falling Edge에 대한 인터럽트 처리 함수 선언
+
+int main() {
+    wiringPiSetupGpio();
+    pinMode(pinSw, INPUT);
+    pinMode(pinSw1, INPUT);
+    pinMode(LED, OUTPUT);
+    pinMode(LED1, OUTPUT);
+
+    wiringPiISR(pinSw1, INT_EDGE_RISING, rising);   // 두 번째 스위치 Rising Edge 인터럽트 설정
+    wiringPiISR(pinSw, INT_EDGE_FALLING, falling);  // 첫 번째 스위치 Falling Edge 인터럽트 설정
+
+    while (1) {
+        digitalWrite(LED, flag);   // 첫 번째 LED를 플래그에 따라 켜거나 끔
+        digitalWrite(LED1, flag1);  // 두 번째 LED를 플래그에 따라 켜거나 끔
+        delay(350);
+    }
+
+    return 0;
+}
+
+void rising(void) {
+    flag = !flag;          // Rising Edge 발생 시 플래그를 토글
+    printf("Rising Occur\n");  // Rising Edge 발생 메시지 출력
+}
+
+void falling(void) {
+    flag1 = !flag1;           // Falling Edge 발생 시 플래그를 토글
+    printf("Falling Occur\n"); // Falling Edge 발생 메시지 출력
+}
