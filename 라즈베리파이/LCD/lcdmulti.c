@@ -24,12 +24,16 @@ int main()
         for (int i = 2; i < 10; i++)
         {
             lcdClear();
+            lcdLoc(LINE1);
+            char str1[16];
+            sprintf(str1, "%d dan", i);
+            typeln(str1);
             for (int j = 1; j < 10; j++)
             {
-                lcdLoc(LINE1);
-                char str1[16];
-                sprintf(str1, "%d * %d = %d", i, j, i * j);
-                typeln(str1);
+                lcdLoc(LINE2);
+                char str2[16];
+                sprintf(str2, "%d * %d = %d", i, j, i * j);
+                typeln(str2);
                 delay(1000);
             }
         }
@@ -39,3 +43,4 @@ int main()
 
     return 0;
 }
+
