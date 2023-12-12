@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <wiringPi.h>
+
+#define KEY 5
+#define LED 16
+
+int main() {
+    printf("Raspberry Pi - Key Input Test\n");
+
+    wiringPiSetupGpio();
+    pinMode(KEY, INPUT);
+    pinMode(LED, OUTPUT);
+
+    while (1) {
+        int value = digitalRead(KEY);
+        delay(300);
+
+        if (value == LOW) {
+            printf("OFF\n");
+            digitalWrite(LED, LOW);
+        } else if (value == HIGH) {
+            printf("ON\n");
+            digitalWrite(LED, HIGH);
+        }
+    }
+
+    return 0;
+}
