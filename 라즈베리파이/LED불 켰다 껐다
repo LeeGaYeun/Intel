@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <wiringPi.h>
+
+#define LED 21
+
+int main()
+{
+    wiringPiSetup();//wPi모드
+    pinMode(LED, OUTPUT);
+
+    while(1){
+       digitalWrite(LED, HIGH);
+       delay(1000);
+       digitalWrite(LED, LOW);
+       delay(1000);
+    }
+
+    return 0;
+ }
