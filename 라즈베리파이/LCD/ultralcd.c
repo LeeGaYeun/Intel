@@ -34,14 +34,18 @@ int main()
         long startTime = micros();
         while (digitalRead(pinEcho) == HIGH);
         long endTime = micros() - startTime;
-        int distance = endTime / 58;
+        double distance = endTime / 58.0;
 
         lcdClear();
         lcdLoc(LINE1);
         char str1[16];
-        sprintf(str1, "Distance : %d", distance);
+        sprintf(str1, "Distance");
         typeln(str1);
-        delay(1000);
+        lcdLoc(LINE2);
+        char str2[16];
+        sprintf(str2, "%.1fcm", distance);
+        typeln(str2);
+        delay(750);
     }
 
     return 0;
