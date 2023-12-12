@@ -1,0 +1,24 @@
+CC = gcc
+CFLAGS = -lwiringPi
+
+OBJS = lcd1602.o lcdmain.o lcdmulti.o lcdmulti1.o ultralcd.o
+
+all : lcdTest lcdmulti lcdmulti1 ultralcd
+
+ultralcd : lcd1602.o ultralcd.o
+	$(CC) -o $@ $^ $(CFLAGS)
+
+lcdmulti1 : lcd1602.o lcdmulti1.o
+	$(CC) -o $@ $^ $(CFLAGS)
+
+lcdTest : lcd1602.o lcdmain.o
+	$(CC) -o $@ $^ $(CFLAGS)
+
+lcdmulti : lcd1602.o lcdmulti.o
+	$(CC) -o $@ $^ $(CFLAGS)
+
+%.o : %.c lcd1602.h
+	$(CC) -c $< $(CFLAGS)
+
+clean :
+	rm -f $(OBJS)
