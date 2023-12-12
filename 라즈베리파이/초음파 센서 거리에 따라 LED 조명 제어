@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <wiringPi.h>
+
+const int pinEcho = 1;
+const int pinTrigger = 0;
+int i; // 반복문에서 사용할 변수
+#define NUM_LEDS 8 // LED 개수
+const int LED_pins[NUM_LEDS] = {2, 3, 4, 17, 27, 22, 14, 15}; // LED 핀 배열
+
+void setup() {
+    wiringPiSetupGpio();
+    pinMode(pinEcho, INPUT);
+    pinMode(pinTrigger, OUTPUT);
+
+    for (i = 0; i < NUM_LEDS; ++i)
+        pinMode(LED_pins[i], OUTPUT); // LED 핀을 출력으로 설정
+
+    digitalWrite(pinTrigger, LOW); // Trigger 핀 초기화 (LOW)
+    delay(10); // 초기화를 위해 10 밀리초 대기
+}
+
+int main() {
+    setup(); // 초기 설정 수행
+
+    while (1) {
+        digitalWrite(pinTrigger, HIGH); // 초음파 발생을 위해 Trigger를 HIGH로 설정
+        delayMicroseconds(15); // 초음파를 15 마이크로초 동안 유지
+        digitalWrite(pinTrigger, LOW); // Trigger를 다시 LOW로 설정하여 초음파 발생
+
+        while (digitalRead(pinEcho) == LOW); // Echo 핀이 LOW에서 HIGH로 변할 때까지 대기
+        long startTime = micros(); // Echo 핀이 HIGH가 되는 시간 기록
+
+        while (digitalRead(pinEcho) == HIGH); // Echo 핀이 HIGH에서 LOW로 변할 때까지 대기
+        long endTime = micros() - startTime; // Echo 핀이 LOW가 되는 시간 기록
+        int d = endTime / 58; // 초음파가 센서에서 반사되어 돌아온 시간을 마이크로초 계산하여 거리로 변환
+
+        printf("Distance = %d\n", d); // 측정된 거리 출력
+        delay(500);
+
+        // 거리에 따라 다양한 LED 패턴 설정
+        if (d >= 45) {
+            for (i = 0; i < 8; i++) {
+                digitalWrite(LED_pins[i], 0);
+            }
+        }
+
+        if (d < 45 && d >= 40) {
+            digitalWrite(LED_pins[1], 1);
+            for (i = 1; i < 8; i++) {
+                digitalWrite(LED_pins[i], 0);
+            }
+        }
+
+        // ... (이하 패턴에 대한 코드 계속)
+    }
+
+    return 0;
+}
