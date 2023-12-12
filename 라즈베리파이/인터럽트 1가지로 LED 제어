@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <wiringPi.h>
+#include <wiringPi.h> 
 
 const int pinSw = 6; // 스위치에 연결된 GPIO 핀 번호
 int flag = 0;        // 인터럽트에서 사용할 플래그 변수
