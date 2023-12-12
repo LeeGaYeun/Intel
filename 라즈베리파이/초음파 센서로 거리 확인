@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <wiringPi.h>
+
+const int pinEcho = 1;
+const int pinTrigger = 0;
+
+int main() {
+    wiringPiSetupGpio();
+    pinMode(pinEcho, INPUT);
+    pinMode(pinTrigger, OUTPUT);
+    digitalWrite(pinTrigger, LOW); // Trigger 핀 초기화 (LOW)
+    delay(10);
+
+    while (1) {
+        digitalWrite(pinTrigger, HIGH); // 초음파 발생을 위해 Trigger를 HIGH로 설정
+        delayMicroseconds(15);           // 초음파를 15 마이크로초 동안 유지
+        digitalWrite(pinTrigger, LOW);  // Trigger를 다시 LOW로 설정하여 초음파 발생 종료
+
+        // Echo 핀이 Low에서 HIGH로 변할 때까지 대기
+        while (digitalRead(pinEcho) == LOW);
+        long startTime = micros(); // Echo 핀이 HIGH가 되는 시간 기록
+
+        // Echo 핀이 HIGH에서 LOW로 변할 때까지 대기
+        while (digitalRead(pinEcho) == HIGH);
+        long endTime = micros() - startTime; // Echo 핀이 LOW가 되는 시간 기록
+
+        // 초음파가 센서에서 반사되어 돌아온 시간을 마이크로초로 계산하여 거리고 변환
+        int distance = endTime / 58;
+
+        printf("Distance: %d\n", distance); // 측정된 거리 출력
+        delay(500);
+    }
+
+    return 0;
+}
