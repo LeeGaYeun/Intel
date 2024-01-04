@@ -6,6 +6,7 @@
 #include "framework.h"
 #include "mfcMemo.h"
 #include "mfcMemoDlg.h"
+#include "CmfcFindDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -20,10 +21,10 @@
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
-class CAboutDlg : public CDialogEx
+class CAboutDlg : public CDialogEx //class.h 정의
 {
 public:
-	CAboutDlg();
+	CAboutDlg(); //생성자
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -64,6 +65,7 @@ CmfcMemoDlg::CmfcMemoDlg(CWnd* pParent /*=nullptr*/)
 void CmfcMemoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT_MEMO, mEditMemo);
 }
 
 BEGIN_MESSAGE_MAP(CmfcMemoDlg, CDialogEx)
@@ -73,6 +75,12 @@ BEGIN_MESSAGE_MAP(CmfcMemoDlg, CDialogEx)
 	ON_COMMAND(ID_MENU_OPEN, &CmfcMemoDlg::OnMenuOpen) //&CmfcMemoDlg:: 생략가능
 
 	ON_COMMAND(ID_MENU_ABOUT2, &CmfcMemoDlg::OnMenuAbout2)
+	ON_COMMAND(ID_MENU_FND, &CmfcMemoDlg::OnMenuFnd)
+	ON_COMMAND(ID_MENU_NEXTFIND, &CmfcMemoDlg::OnMenuNextfind)
+	ON_COMMAND(ID_MENU_UTF8, &CmfcMemoDlg::OnMenuUtf8)
+	ON_COMMAND(ID_MENU_ANSI, &CmfcMemoDlg::OnMenuAnsi)
+	ON_COMMAND(ID_MENU_REPLACE, &CmfcMemoDlg::OnMenuReplace)
+	ON_COMMAND(IDC_BUTTON_CHANGE, &CmfcMemoDlg::OnButtonChange)
 END_MESSAGE_MAP()
 
 
@@ -108,6 +116,7 @@ BOOL CmfcMemoDlg::OnInitDialog() //C~Dlg의 이름은 main class라는 의미
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	mAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_ACCEL1));
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -180,23 +189,25 @@ void CmfcMemoDlg::OnMenuOpen() // File Open Menu 처리기
 
 	str = buf; // CString WCHAR을 바로 대입 가능, char도 대입 가능
 	
-	// C에서 file open하는 법 fopen(파일 경로, 오픈모드) ANSI encoding
-	/*FILE* fp = fopen(fName, "rb"); 
-	
-	while (fgets(buf, 512, fp)){
-		((CEdit*)GetDlgItem(IDC_EDIT1))->GetWindowText(str);
-		GetDlgItem(IDC_EDIT1)->SetWindowText(str + buf);
-	}*/
+	if (mEncoding == 0) {
+		// C에서 file open하는 법 fopen(파일 경로, 오픈모드) ANSI encoding
+		FILE* fp = fopen(fName, "rb");
 
-	//C++ stream 표준 .UTF-8 encoding
-	wchar_t buf1[512];
-	std::locale::global(std::locale(".UTF-8"));
-	std::wifstream ff(fName);
+		while (fgets(buf, 512, fp)){
+			((CEdit*)GetDlgItem(IDC_EDIT1))->GetWindowText(str);
+			GetDlgItem(IDC_EDIT1)->SetWindowText(str + buf);
+		}
+	}
+	else if (mEncoding == 1) {
+		//C++ stream 표준 .UTF-8 encoding
+		wchar_t buf1[512];
+		std::locale::global(std::locale(".UTF-8"));
+		std::wifstream ff(fName);
 
-	for (; ff.getline(buf1, 512);) {//한 줄씩
-		((CEdit*)GetDlgItem(IDC_EDIT1))->GetWindowText(str);
-		str += buf1; str += "\r\n";
-		GetDlgItem(IDC_EDIT1)->SetWindowText(str);
+		for (; ff.getline(buf1, 512);) {//한 줄씩
+			str = buf1;
+			AddText(str); AddText("\r\n");
+		}
 	}
 }
 
@@ -205,3 +216,105 @@ void CmfcMemoDlg::OnMenuAbout2()
 	CAboutDlg dlg;
 	dlg.DoModal();
 }
+
+void CmfcMemoDlg::AddText(CString s) //문자열 덧붙여주는 함수
+{
+	{
+		CString str;
+		((CEdit*)GetDlgItem(IDC_EDIT1))->GetWindowText(str);
+		str += s;
+		GetDlgItem(IDC_EDIT1)->SetWindowText(str);
+	}
+}
+
+CString CmfcMemoDlg::findString;
+int CmfcMemoDlg::findPosition;
+
+void CmfcMemoDlg::OnMenuFnd() //찾기
+{
+	CmfcFindDlg dlg; //#include "CmfcFindDlg.h" 해줘야 함
+	if (dlg.DoModal() == IDOK) { //FIND할 문자열 입력
+		findString = dlg.mStr;
+		CString s;
+		mEditMemo.GetWindowText(s);
+		int start = s.Find(findString);	//찾을 문자열을 탐색해 줌
+		int end = start + dlg.mStr.GetLength();
+		mEditMemo.SetSel(start, end); //SetSel(시작점, 끝점) 어디부터 어디까지
+		findPosition = end;
+	}
+}
+
+void CmfcMemoDlg::OnMenuNextfind() //다음 찾기
+{
+	CString s;
+	mEditMemo.GetWindowText(s);
+
+	int nextfind = s.Find(findString, findPosition + 1);
+	if (nextfind != -1) {
+		int nextend = nextfind + findString.GetLength();
+		mEditMemo.SetSel(nextfind, nextend); //SetSel(시작점, 끝점) 어디부터 어디까지
+		findPosition = nextend + 1;
+	}
+	else
+	{
+		AfxMessageBox(_T("찾을 수 없습니다."));
+
+		findPosition = 0;
+	}
+}
+
+void CmfcMemoDlg::OnMenuReplace()
+{
+	OnButtonChange();
+}
+
+void CmfcMemoDlg::OnButtonChange()
+{
+	CmfcFindDlg dlg;
+	if (dlg.DoModal() == IDOK) {
+		CString previousStr = dlg.mStr;
+		CString newStr = dlg.mStr2;
+
+		CString s;
+		mEditMemo.GetWindowText(s);
+
+		int start = s.Find(previousStr);
+		if (start != -1) {
+			int end = start + previousStr.GetLength();
+			mEditMemo.SetSel(start, end);
+			mEditMemo.ReplaceSel(newStr);
+		}
+		else {
+			AfxMessageBox(_T("바꿀 수 있는게 없습니다."));
+		}
+	}
+}
+
+
+BOOL CmfcMemoDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (mAccel) {
+		if (TranslateAccelerator(m_hWnd, mAccel, pMsg)) {
+			return TRUE;
+		}
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+void CmfcMemoDlg::OnMenuUtf8()
+{
+	CMenu* m = GetMenu();
+	m->CheckMenuItem(ID_MENU_UTF8, MF_CHECKED);
+	m->CheckMenuItem(ID_MENU_ANSI, MF_UNCHECKED);
+	mEncoding = 1;
+}
+
+void CmfcMemoDlg::OnMenuAnsi()
+{
+	CMenu* m = GetMenu();
+	m->CheckMenuItem(ID_MENU_UTF8, MF_UNCHECKED);
+	m->CheckMenuItem(ID_MENU_ANSI, MF_CHECKED);
+	mEncoding = 0;
+}
+
