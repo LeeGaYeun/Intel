@@ -7,6 +7,7 @@
 #include "mfcMemo.h"
 #include "mfcMemoDlg.h"
 #include "CmfcFindDlg.h"
+#include "CmfcReplace.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -80,7 +81,7 @@ BEGIN_MESSAGE_MAP(CmfcMemoDlg, CDialogEx)
 	ON_COMMAND(ID_MENU_UTF8, &CmfcMemoDlg::OnMenuUtf8)
 	ON_COMMAND(ID_MENU_ANSI, &CmfcMemoDlg::OnMenuAnsi)
 	ON_COMMAND(ID_MENU_REPLACE, &CmfcMemoDlg::OnMenuReplace)
-	ON_COMMAND(IDC_BUTTON_CHANGE, &CmfcMemoDlg::OnButtonChange)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -117,7 +118,15 @@ BOOL CmfcMemoDlg::OnInitDialog() //C~Dlg의 이름은 main class라는 의미
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	mAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_ACCEL1));
-
+	mStatusBar.Create(WS_CHILD | WS_VISIBLE, CRect(0, 0, 0, 0), this, 0);//좌상우하
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 2);
+	GetDynamicLayout()->AddItem(mStatusBar.GetSafeHwnd(), 
+		CMFCDynamicLayout::MoveVertical(100), 
+		CMFCDynamicLayout::SizeHorizontal(100)); //관례적으로 이렇게 씀 
+	int sec[] = {100, 200};
+	mStatusBar.SetParts(2, sec);
+	mStatusBar.SetText("Test 1", 0, SBT_NOBORDERS);
+	mStatusBar.SetText("Test 2", 1, SBT_NOBORDERS);
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -263,33 +272,18 @@ void CmfcMemoDlg::OnMenuNextfind() //다음 찾기
 	}
 }
 
-void CmfcMemoDlg::OnMenuReplace()
+void CmfcMemoDlg::OnMenuReplace() //일괄 변경 코드 (Replace 함수)
 {
-	OnButtonChange();
-}
-
-void CmfcMemoDlg::OnButtonChange()
-{
-	CmfcFindDlg dlg;
-	if (dlg.DoModal() == IDOK) {
-		CString previousStr = dlg.mStr;
-		CString newStr = dlg.mStr2;
-
+	CmfcReplace dlg;
+	if (dlg.DoModal() == IDOK) { //FIND & REPLACE 할 문자열 입력
 		CString s;
 		mEditMemo.GetWindowText(s);
-
-		int start = s.Find(previousStr);
-		if (start != -1) {
-			int end = start + previousStr.GetLength();
-			mEditMemo.SetSel(start, end);
-			mEditMemo.ReplaceSel(newStr);
-		}
-		else {
-			AfxMessageBox(_T("바꿀 수 있는게 없습니다."));
-		}
-	}
+		sFind = dlg.mStrFind;
+		sReplace = dlg.mStrReplace;
+		s.Replace(sFind, sReplace);
+		mEditMemo.SetWindowText(s);
+	}	
 }
-
 
 BOOL CmfcMemoDlg::PreTranslateMessage(MSG* pMsg)
 {
@@ -318,3 +312,11 @@ void CmfcMemoDlg::OnMenuAnsi()
 	mEncoding = 0;
 }
 
+
+
+void CmfcMemoDlg::OnSize(UINT nType, int cx, int cy) //과제 (status bar 크기 조절)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}

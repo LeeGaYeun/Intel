@@ -4,7 +4,6 @@ class CmfcFindDlg : public CDialogEx
 {
 public:
     CString mStr = "";
-    CString mStr2 = "";
 
     CmfcFindDlg();
 
@@ -19,6 +18,4 @@ public:
 
     DECLARE_MESSAGE_MAP()
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-    afx_msg void OnBnClickedButton1();
-    afx_msg void OnClickedButtonChange();
 };

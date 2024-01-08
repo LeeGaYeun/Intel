@@ -184,6 +184,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CmfcFindDlg.h" />
+    <ClInclude Include="CmfcReplace.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="mfcMemo.h" />
     <ClInclude Include="mfcMemoDlg.h" />
@@ -193,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmfcFindDlg.cpp" />
+    <ClCompile Include="CmfcReplace.cpp" />
     <ClCompile Include="mfcMemo.cpp" />
     <ClCompile Include="mfcMemoDlg.cpp" />
     <ClCompile Include="pch.cpp">
