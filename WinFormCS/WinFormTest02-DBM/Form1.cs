@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,38 +49,98 @@ namespace WinFormTest02_DBM
             }
         }
 
-        String[] RunSql(string sql) //Select vs Others
+        ArrayList ColName = new ArrayList();    // 필드 이름 List
+        List<object[]> RunSql(string sql) //Select vs Others
         {
+            List<object[]> result = new List<object[]>(); //result 객체 선언
             sqlComm.CommandText = sql; //sql을 이용하여 command 수행
-            SqlDataReader sr = sqlComm.ExecuteReader(); //reader로 수행하게 됨
-            if (sql.Trim().ToLower().Substring(0, 6) == "select")  //Trim은 공백문자, 엔터, 탭을 제거해줌 ToLower를 넣어 6글자면 select글자를 읽어올 수 있게 함
+            try
             {
-                
-                for (int i = 0; i < sr.FieldCount; i++)
+                if (sql.Trim().ToLower().Substring(0, 6) == "select")  //Trim은 공백문자, 엔터, 탭을 제거해줌 ToLower를 넣어 6글자면 select글자를 읽어올 수 있게 함
                 {
-                    string colName = sr.GetName(i);
-                    dataView.Columns.Add(colName, colName);
+                    SqlDataReader sr = sqlComm.ExecuteReader(); //reader로 수행하게 됨
+                    ColName.Clear();
+                    for (int i = 0; i < sr.FieldCount; i++) // Column Name
+                    {
+                        ColName.Add(sr.GetName(i));
+                    }
+                    for (; sr.Read();)
+                    {
+                        object[] oarr = new object[sr.FieldCount];
+                        sr.GetValues(oarr);
+                        result.Add(oarr);
+                        //string str = "";
+                        //for (int i = 0; i < sr.fieldcount; i++)
+                        //{
+                        //    object o = sr.getvalue(i);
+                        //    if (i == 0) str = $"{o}";
+                        //    else        str += $",{o}";
+                        //}
+                    }
+                    sr.Close();
                 }
+                else
+                {
+                    int n = sqlComm.ExecuteNonQuery();
+                }
+                sbLabel3.Text = "OK";
+                return result;
             }
-            for (int i = 0; i < sr.FieldCount; i++)
+            catch (Exception ex)
             {
-                string colName = sr.GetName(i);
+                sbLabel3.AutoSize = true;
+                sbLabel3.BackColor = Color.FromArgb(255, 167, 167);
+                sbLabel3.Text = ex.Message;
+                return null;
+            }
+        }
+
+        private void mnuRun_Click(object sender, EventArgs e)
+        {
+            string sql = tbSql.SelectedText;
+            if (sql == "") sql = tbSql.Text;
+            List<object[]> r = RunSql(sql);
+            if (r == null) return;
+            dataView.Rows.Clear();
+            dataView.Columns.Clear();
+            for(int i = 0; i < ColName.Count; i++)
+            {
+                string colName = (string)ColName[i];
                 dataView.Columns.Add(colName, colName);
             }
-            for (;sr.Read();) //하나의 레코드를 한 줄씩 읽음 
+            for (int i = 0; i < r.Count; i++)
             {
                 int nRow = dataView.Rows.Add(); // 1 Line Add
-                for (int i = 0; i < sr.FieldCount; i++)
+                object[] o = r[i];
+                for (int j = 0; j < ColName.Count; j++)
                 {
-                    object o = sr.GetValue(i);
-                    dataView.Rows[nRow].Cells[i].Value = o;
+                    dataView.Rows[nRow].Cells[j].Value = o[j];
                 }
             }
         }
 
-        private void mnuSql1_Click(object sender, EventArgs e)
+        private void mnuFont_Click(object sender, EventArgs e)
         {
-            string sql = "Select * from person"; //sql문을 구성
+            if (fontDialog1.ShowDialog() == DialogResult.OK)
+            {
+                tbSql.Font = fontDialog1.Font;
+                sbLabel2.Text = tbSql.Font.Name;
+            }
+        }
+
+        private void mnuSave_Click(object sender, EventArgs e)
+        {
+            DialogResult ret = saveFileDialog1.ShowDialog();
+            if (ret == DialogResult.OK)
+            {
+                string fn = saveFileDialog1.FileName;
+                FileStream fs = new FileStream(fn, FileMode.Create);
+                StreamWriter sw = new StreamWriter(fs);
+                sw.Write(tbSql.Text);
+                sw.Close();
+                fs.Close();
+            }
+
         }
     }
 }
