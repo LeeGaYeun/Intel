@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPaint));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,19 +42,22 @@
             this.mnuLine = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuRect = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuCircle = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuText = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuErase = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuText = new System.Windows.Forms.ToolStripMenuItem();
             this.보기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuColor = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.sbLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.sbLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.sbLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.sbLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.Canvas = new System.Windows.Forms.PictureBox();
-            this.sbLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
+            this.동작테스트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuTestSine = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
@@ -65,7 +69,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.파일ToolStripMenuItem,
             this.홈ToolStripMenuItem,
-            this.보기ToolStripMenuItem});
+            this.보기ToolStripMenuItem,
+            this.동작테스트ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(800, 24);
@@ -99,6 +104,7 @@
             this.mnuOpen.Name = "mnuOpen";
             this.mnuOpen.Size = new System.Drawing.Size(180, 22);
             this.mnuOpen.Text = "열기";
+            this.mnuOpen.Click += new System.EventHandler(this.mnuOpen_Click);
             // 
             // mnuSave
             // 
@@ -167,6 +173,14 @@
             this.mnuCircle.Text = "원";
             this.mnuCircle.Click += new System.EventHandler(this.mnuCircle_Click);
             // 
+            // mnuText
+            // 
+            this.mnuText.BackColor = System.Drawing.Color.OldLace;
+            this.mnuText.Name = "mnuText";
+            this.mnuText.Size = new System.Drawing.Size(180, 22);
+            this.mnuText.Text = "문자 입력";
+            this.mnuText.Click += new System.EventHandler(this.mnuText_Click);
+            // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
@@ -180,17 +194,9 @@
             this.mnuErase.Text = "모두 지우기";
             this.mnuErase.Click += new System.EventHandler(this.mnuErase_Click);
             // 
-            // mnuText
-            // 
-            this.mnuText.BackColor = System.Drawing.Color.OldLace;
-            this.mnuText.Name = "mnuText";
-            this.mnuText.Size = new System.Drawing.Size(180, 22);
-            this.mnuText.Text = "문자 입력";
-            this.mnuText.Click += new System.EventHandler(this.mnuText_Click);
-            // 
             // 보기ToolStripMenuItem
             // 
-            this.보기ToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(255)))), ((int)(((byte)(227)))));
+            this.보기ToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(245)))), ((int)(((byte)(255)))));
             this.보기ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuColor});
             this.보기ToolStripMenuItem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(255)))));
@@ -218,6 +224,17 @@
             this.statusStrip1.Size = new System.Drawing.Size(800, 24);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // sbLabel1
+            // 
+            this.sbLabel1.AutoSize = false;
+            this.sbLabel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(250)))));
+            this.sbLabel1.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.sbLabel1.Image = global::WinFormTest03_Paint.Properties.Resources.레몬맨11;
+            this.sbLabel1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.sbLabel1.Name = "sbLabel1";
+            this.sbLabel1.Size = new System.Drawing.Size(100, 19);
+            this.sbLabel1.Text = " ";
             // 
             // sbLabel2
             // 
@@ -262,16 +279,22 @@
             this.Canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseMove);
             this.Canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseUp);
             // 
-            // sbLabel1
+            // 동작테스트ToolStripMenuItem
             // 
-            this.sbLabel1.AutoSize = false;
-            this.sbLabel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(250)))));
-            this.sbLabel1.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.sbLabel1.Image = global::WinFormTest03_Paint.Properties.Resources.레몬맨11;
-            this.sbLabel1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.sbLabel1.Name = "sbLabel1";
-            this.sbLabel1.Size = new System.Drawing.Size(100, 19);
-            this.sbLabel1.Text = " ";
+            this.동작테스트ToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(236)))), ((int)(((byte)(255)))));
+            this.동작테스트ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuTestSine});
+            this.동작테스트ToolStripMenuItem.Name = "동작테스트ToolStripMenuItem";
+            this.동작테스트ToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
+            this.동작테스트ToolStripMenuItem.Text = "동작테스트";
+            // 
+            // mnuTestSine
+            // 
+            this.mnuTestSine.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(255)))), ((int)(((byte)(223)))));
+            this.mnuTestSine.Name = "mnuTestSine";
+            this.mnuTestSine.Size = new System.Drawing.Size(180, 22);
+            this.mnuTestSine.Text = "Sine Graph";
+            this.mnuTestSine.Click += new System.EventHandler(this.mnuTestSine_Click);
             // 
             // frmPaint
             // 
@@ -285,7 +308,10 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmPaint";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MyPaint_v8.25";
+            this.ResizeEnd += new System.EventHandler(this.frmPaint_ResizeEnd);
+            this.Resize += new System.EventHandler(this.frmPaint_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -323,6 +349,9 @@
         private System.Windows.Forms.ToolStripStatusLabel sbLabel2;
         private System.Windows.Forms.ToolStripStatusLabel sbLabel3;
         private System.Windows.Forms.ToolStripStatusLabel sbLabel4;
+        private System.IO.Ports.SerialPort serialPort1;
+        private System.Windows.Forms.ToolStripMenuItem 동작테스트ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mnuTestSine;
     }
 }
 
