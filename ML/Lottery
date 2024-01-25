@@ -1,0 +1,14 @@
+import random
+
+name_list = ['1조', '2조', '3조', '4조', '5조', '6조', '7조']
+chapter_list = ['챕터1', '챕터2', '챕터3', '챕터4', '챕터12', '챕터19', '챕터20']
+
+for i in range(7):
+    selected_index = random.randint(0, len(name_list) - 1)
+    selected_name = name_list[selected_index]
+    selected_chapter = chapter_list[selected_index]
+    
+    name_list.pop(selected_index)
+    chapter_list.pop(selected_index)
+    
+    print(f'이름: {selected_name}, 챕터: {selected_chapter}')
