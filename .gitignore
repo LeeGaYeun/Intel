@@ -1,0 +1,17 @@
+﻿################################################################################
+# 이 .gitignore 파일은 Microsoft(R) Visual Studio에서 자동으로 만들어졌습니다.
+################################################################################
+
+/.vs
+/MFCTest02/MFCTest02/x64/Debug
+/MFCTest02/x64/Debug
+/OpenCV
+/RasberryPi_Proj/.vs
+/HelloCV
+/MFCTest02
+/Sample/.vs/Sample/v17
+/Sample/Sample/x64/Debug
+/Sample/x64/Debug
+/WinFormCS
+/VSCodeUserSetup-x64-1.85.1.exe
+/Sample/.vs/Sample/FileContentIndex
