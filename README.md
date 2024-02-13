@@ -1,3 +1,0 @@
-# Intel
-## Incheon
-### Kocharm
